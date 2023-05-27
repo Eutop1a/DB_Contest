@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-ch">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./lib/jquery.js">
+    <link rel="stylesheet" href="./css/index.css">
+    <link rel="stylesheet" href="./css/header.css">
+    <link rel="stylesheet" href="./css/common.css">
+    <link rel="stylesheet" href="./iconfont/download/font_4051106_0wwlj73gl1pq/iconfont.css">
+    <link rel="stylesheet" href="./lib/bootstrap-3.4.1-dist/css/bootstrap.min.css">
+    <title>登录页</title>
+</head>
+
+<body>
+    <img src="./img/985330.jpg" alt="图裂了" class="bcg">
+
+    <div class="all">
+        <div class="head"><a class="active" data-id="0">登录账号</a><a data-id="1">注册账号</a></div>
+        <span class="fir">
+            <div class="user">
+                <span>账号：</span>
+                <input type="text" autocomplete="off">
+                <a href="" class="iconfont icon-close"></a>
+                <span class="tishi">请输入正确账号(3-10位数字)</span>
+                <!-- <span class="tishi">用户名不存在！</span> -->
+            </div>
+            <div class="pas">
+                <span>密码：</span>
+                <input type="password" autocomplete="off">
+                <span class="pastishi">密码长度8-16位，至少包含一个数字以及字母</span>
+            </div>
+            <div class="sub">
+                <span class="tishiuser">用户名不存在！</span>
+                <span class="tishipas">密码错误！</span>
+                <button type="button" class="btn btn-primary" id="sign">登录</button>
+            </div>
+        </span>
+        <span class="sec">
+            <div class="user2">
+                <span>账号：</span>
+                <input type="text" autocomplete="off">
+                <a href="" class="iconfont icon-close"></a>
+                <span class="tishi2">请输入合法账号(3-10位数字)</span>
+                <span class="tishi3">该账号已存在！</span>
+            </div>
+            <div class="nicheng">
+                <span>昵称：</span>
+                <input type="text" autocomplete="off">
+                <span class="nitishi">请输入不超过8个字符的昵称</span>
+            </div>
+            <div class="pas2">
+                <span>密码：</span>
+                <input type="password" autocomplete="off">
+                <span class="pastishi">密码长度8-16位，至少包含一个数字以及字母</span>
+            </div>
+
+            <div class="con">
+                <span>确认密码：</span>
+                <input type="password" autocomplete="off">
+                <span class="contishi">两次密码不一致！请检查</span>
+            </div>
+            <div class="sub2">
+                <button type="button" class="btn btn-primary" id="sign">注册</button>
+            </div>
+        </span>
+
+    </div>
+    <script>
+        const t = { Token: localStorage.getItem('token') }
+        if (t.Token) {
+            //判断令牌是否过期，如果过期清楚登录状态，如果没有就跳转
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/open"); // 根据实际的后端路由进行设置
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        // 请求成功，处理响应
+                        // alert("token解析成功")
+                        self.location = 'question.html'
+                    }
+                    if (xhr.status === 400 || xhr.status === 401) {
+                        alert("请重新登录");
+                        localStorage.removeItem('uid')
+                        localStorage.removeItem('token')
+                        // 请求失败，显示错误信息
+                    }
+                }
+            };
+            xhr.send(JSON.stringify(t))
+
+        }
+        (function () {
+            const tishiuser = document.querySelector('.tishiuser')
+            const tishipas = document.querySelector('.tishipas')
+            const user = document.querySelector('.user input')
+
+            const pas = document.querySelector('.pas input')
+            const but = document.querySelector('button')
+            user.addEventListener('click', function () {
+                user.style.width = '200px'
+            })
+            pas.addEventListener('click', function () {
+                pas.style.width = '200px'
+            })
+
+            const head = document.querySelector('.head')
+            const fir = document.querySelector('.fir')
+            const sec = document.querySelector('.sec')
+            const all = document.querySelector('.all')
+            head.addEventListener('click', function (e) {
+                if (e.target.tagName == 'A') {
+                    head.querySelector('.active').classList.remove('active')
+                    e.target.classList.add('active')
+                    if (e.target.dataset.id == '0') {
+                        fir.style.display = 'block'
+                        sec.style.display = 'none'
+                        all.style.height = '330px'
+                        all.style.top = '22px'
+                        all.style.paddingTop = '0px'
+                    } else {
+                        fir.style.display = 'none'
+                        sec.style.display = 'block'
+                        all.style.height = '500px'
+                        all.style.top = '-22px'
+                        all.style.paddingTop = '20px'
+                    }
+
+                }
+
+            })
+            const a = document.querySelector('.icon-close')
+            // if (user.value) {
+            //     user.style.width = '200px'
+            //     a.style.display = 'inline-block'
+            // }
+            a.addEventListener('click', function (e) {
+                e.preventDefault()
+
+                user.value = ''
+                pas.value = ''
+                a.style.display = 'none'
+                pastishi.style.display = 'none'
+            })
+            tishi = document.querySelector('.tishi')
+            pas.addEventListener('input', function () {
+                but.innerHTML = '登录'
+            })
+            user.addEventListener('input', function () {
+                but.innerHTML = '登录'
+                a.style.display = 'inline-block'
+                if (!user.value) {
+                    a.style.display = 'none'
+                }
+            })
+            const pastishi = document.querySelector('.pastishi')
+            pas.addEventListener('change', function () {
+                tishipas.style.display = 'none'
+                tishiuser.style.display = 'none'
+                reg = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,16}$/
+                if (!reg.test(pas.value)) {
+                    pastishi.style.display = 'block'
+                }
+                else {
+                    pastishi.style.display = 'none'
+                }
+            })
+            user.addEventListener('change', function () {
+                reg = /^[0-9]{3,10}$/
+                tishipas.style.display = 'none'
+                tishiuser.style.display = 'none'
+                if (!reg.test(user.value)) {
+                    tishi.style.display = 'block'
+                }
+                else {
+                    tishi.style.display = 'none'
+                }
+            })
+
+            var xhr = new XMLHttpRequest()
+            xhr.open("POST", "/login");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        console.log(response);
+                    } else {
+
+                        alert("登录请求失败");
+                    }
+                }
+            };
+
+            //登录函数
+            const login = function () {
+                reg1 = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,16}$/
+                reg2 = /^[0-9]{3,10}$/
+                if (reg1.test(pas.value) && reg2.test(user.value)) {
+                    const data = {
+                        username: user.value,
+                        password: pas.value
+                    }
+                    var xhr = new XMLHttpRequest()
+                    xhr.open("POST", "/login");
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === XMLHttpRequest.DONE) {
+                            if (xhr.status === 200) {
+                                res = xhr.responseText;
+                                var response = JSON.parse(xhr.responseText);
+                                token = response.Token
+                                //查找数据库里面有没有该用户名
+                                if (res == "该用户名不存在")//如果有再进行下一步判断
+                                {
+
+                                    tishiuser.style.display = 'block'
+                                    tishipas.style.display = 'none'
+
+                                }
+                                else {
+                                    if (res == "密码错误") {
+                                        tishiuser.style.display = 'none'
+                                        tishipas.style.display = 'block'
+                                    }
+                                    else {
+                                        localStorage.setItem('token', token)
+                                        localStorage.setItem('uid', user.value)
+                                        but.innerText = '登录成功！'
+                                        setTimeout(function () { self.location = 'question.html' }, 500)
+
+                                    }
+
+                                }
+
+                            } else {
+
+                                alert("登录请求失败");
+                            }
+                        }
+                    };
+                    xhr.send(JSON.stringify(data));
+
+                }
+            }
+            user.addEventListener('keyup', function (e) {
+                e.preventDefault()
+                if (e.key === 'Enter') {
+                    if (!user.value) {
+                        but.innerHTML = '请输入账户！'
+                    } else {
+                        if (!pas.value) {
+                            but.innerHTML = '请输入密码！'
+                        }
+                        else {
+                            // save()
+                            // location.href = "https://www.bilibili.com/"
+                            // but.innerText = '登录成功！'
+                        }
+                    }
+
+                }
+            })
+            pas.addEventListener('keyup', function (e) {
+                e.preventDefault()
+                if (e.key === 'Enter') {
+
+                    if (!user.value) {
+                        but.innerHTML = '请输入账户！'
+                    }
+                    else if (!pas.value) {
+                        but.innerHTML = '请输入密码！'
+                    }
+                    else {
+                        // alert('登录成功！')
+                        login()
+                        // but.innerText = '登录成功！'
+                    }
+                }
+            })
+            but.addEventListener('click', function (e) {
+                e.preventDefault()
+                if (!user.value) {
+                    but.innerHTML = '请输入账户！'
+                } else {
+                    if (!pas.value) {
+                        but.innerHTML = '请输入密码！'
+                    }
+                    else {
+                        // save()
+                        login()
+                        // but.innerText = '登录成功！'
+                    }
+                }
+            })
+        })();
+
+        (function () {
+            const tishi = document.querySelector('.tishi2')
+            const tishi2 = document.querySelector('.tishi3')
+            const pastishi = document.querySelector('.pas2 .pastishi')
+            const contishi = document.querySelector('.contishi')
+            const nitishi = document.querySelector('.nitishi')
+            const user = document.querySelector('.user2 input')
+            const pas = document.querySelector('.pas2 input')
+            const con = document.querySelector('.con input')
+            const sub = document.querySelector('.sub2 button')
+            const nicheng = document.querySelector('.nicheng input')
+            var response
+            user.addEventListener('change', function (e) {
+                e.preventDefault()
+                reg = /^[0-9]{3,10}$/
+                if (!reg.test(user.value)) {
+                    tishi.style.display = 'block'
+                    tishi2.style.display = 'none'
+                }
+                else {
+                    var data = {
+                        username: user.value
+                    }
+                    tishi.style.display = 'none'
+                    const xhr = new XMLHttpRequest();
+                    xhr.open("POST", "/check"); // 根据实际的后端路由进行设置
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.send(JSON.stringify(data))
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === XMLHttpRequest.DONE) {
+                            if (xhr.status === 200) {
+                                // 请求成功，处理响应
+                                response = xhr.responseText;
+                                // console.log(response);
+                                //如果返回的是1，即有重名，提示信息显示
+                                if (response == '1') {
+                                    tishi2.style.display = 'block'
+                                }
+                                else {
+                                    tishi2.style.display = 'none'
+                                }
+                            } else {
+                                // 请求失败，显示错误信息
+                                alert("登录请求失败");
+                            }
+                        }
+                    };
+
+
+                }
+            })
+            nicheng.addEventListener('change', function () {
+                reg = /^\S{1,8}$/
+                if (!reg.test(nicheng.value)) {
+                    nitishi.style.display = 'block'
+                }
+                else {
+                    nitishi.style.display = 'none'
+                }
+            })
+            pas.addEventListener('keyup', function (e) {
+                e.preventDefault()
+            })
+            con.addEventListener('keyup', function (e) {
+                e.preventDefault()
+            })
+            nicheng.addEventListener('keyup', function (e) {
+                e.preventDefault()
+            })
+            user.addEventListener('keyup', function (e) {
+                e.preventDefault()
+            })
+            pas.addEventListener('change', function () {
+                reg = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,16}$/
+                if (!reg.test(pas.value)) {
+                    pastishi.style.display = 'block'
+                }
+                else {
+                    pastishi.style.display = 'none'
+                }
+            })
+            con.addEventListener('blur', function () {
+                if (pas.value != con.value) {
+                    contishi.style.display = 'block'
+                }
+                else {
+                    contishi.style.display = 'none'
+                }
+            })
+
+            // 发送数据给后端
+            var token
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/register"); // 根据实际的后端路由进行设置
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        // 请求成功，处理响应
+                        var response = JSON.parse(xhr.responseText);
+                        token = response.Token
+                        localStorage.setItem('token', token)
+                        console.log(token);
+                    } else {
+                        // 请求失败，显示错误信息
+                        alert("登录请求失败");
+                    }
+                }
+            };
+            sub.addEventListener('click', function (e) {
+                e.preventDefault()
+                pasreg = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,16}$/
+                nireg = /^\S{1,8}$/
+                userreg = /^[0-9]{3,10}$/
+
+                if (response == '0' && pasreg.test(pas.value) && nireg.test(nicheng.value) && userreg.test(user.value) && pas.value == con.value) {
+                    const data = {
+                        nickname: nicheng.value,
+                        username: user.value,
+                        password: pas.value
+                    }
+                    console.log(data);
+
+                    xhr.send(JSON.stringify(data))
+                    localStorage.setItem('uid', user.value)
+                    sub.innerHTML = '注册成功'
+                    setTimeout(function () { self.location = 'question.html' }, 500)
+                }
+            })
+
+        })();
+
+    </script>
+</body>
+
+</html>

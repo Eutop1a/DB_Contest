@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div>1</div>
+    <script>
+        const div = document.querySelector('div')
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "pc.mamahaha.work:33334/api/list")  // 根据实际的后端路由进行设置
+        xhr.setRequestHeader("Content-Type", "application/json");
+        // xhr.send(JSON.stringify(data))
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                alert(xhr.status);
+                if (xhr.status === 200) {
+                    // 请求成功，处理响应
+                    response = xhr.responseText;
+                    console.log(response);
+                    div.innerHTML = response
+                } else {
+                    // 请求失败，显示错误信息
+                    alert("登录请求失败");
+                }
+            }
+            else {
+                alert("失败")
+            }
+        };
+    </script>
+</body>
+
+</html>

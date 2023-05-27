@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-ch">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./lib/jquery.js">
+    <link rel="stylesheet" href="./css/header.css">
+    <link rel="stylesheet" href="./css/common.css">
+    <link rel="stylesheet" href="./css/sort.css">
+    <link rel="stylesheet" href="./iconfont/download/font_4051106_0wwlj73gl1pq/iconfont.css">
+    <link rel="stylesheet" href="./lib/bootstrap-3.4.1-dist/css/bootstrap.min.css">
+    <title>排行榜</title>
+</head>
+
+<body>
+    <img src="./img/985330.jpg" alt="图裂了" class="bcg">
+    <div class="header">
+        <div class="left"><span class="title"><a href="./question.html">题目总览</a></span><span class="sort"><a
+                    href="./sort.html" class="active">排行榜</a></span></div>
+        <div class="right"><span><span class="imfor"><span class="id">2021211718</span><span
+                        class="nick">张三</span></span><a href="" class="exit">退出登录</a></span></div>
+    </div>
+    <div class="content">
+        <div class="title">
+            <div class="no">排名</div>
+            <div class="id">账号</div>
+            <div class="nick">昵称</div>
+            <div class="num">分数</div>
+        </div>
+        <ul class="detail">
+            <li>
+                <div class="no">1</div>
+                <div class="id">2021211718</div>
+                <div class="nick">张三</div>
+                <div class="num">10</div>
+            </li>
+            <li>
+                <div class="no">100</div>
+                <div class="id">2022</div>
+                <div class="nick">马儿马儿马儿马儿</div>
+                <div class="num">100</div>
+            </li>
+        </ul>
+    </div>
+    <div class="footer">我也是有底线的</div>
+    <script>
+        //打开页面获取右上角信息
+        (function () {
+            const id = document.querySelector('.id')
+            id.innerHTML = localStorage.getItem('uid')
+            const data = {
+                username: localStorage.getItem('uid')
+            }
+            console.log(data);
+            const nick = document.querySelector('.nick')
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "/get"); // 根据实际的后端路由进行设置
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(data))
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        // 请求成功，处理响应
+                        response = xhr.responseText;
+                        console.log(response);
+                        nick.innerHTML = response
+                    } else {
+                        // 请求失败，显示错误信息
+                        alert("登录请求失败");
+                    }
+                }
+            };
+            const exit = document.querySelector('.exit')
+            exit.addEventListener('click', e => {
+                e.preventDefault()
+                localStorage.removeItem('uid')
+                localStorage.removeItem('token')
+                self.location = 'index.html'
+            })
+        })()
+
+    </script>
+</body>
+
+</html>

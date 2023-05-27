@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-ch">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./lib/jquery.js">
+    <link rel="stylesheet" href="./css/header.css">
+    <link rel="stylesheet" href="./css/common.css">
+    <link rel="stylesheet" href="./css/question.css">
+    <link rel="stylesheet" href="./iconfont/download/font_4051106_0wwlj73gl1pq/iconfont.css">
+    <link rel="stylesheet" href="./lib/bootstrap-3.4.1-dist/css/bootstrap.min.css">
+    <title>题目列表</title>
+</head>
+
+<body>
+    <img src="./img/985330.jpg" alt="图裂了" class="bcg">
+    <div class="header">
+        <div class="left"><span class="title"><a href="" class="active">题目总览</a></span><span class="sort"><a
+                    href="./sort.html">排行榜</a></span></div>
+        <div class="right"><span><span class="imfor"><span class="id">2021211718</span><span
+                        class="nick">张三</span></span><a href="" class="exit">退出登录</a></span></div>
+    </div>
+    <div class="content">
+        <div class="title">题目列表：</div>
+        <ul>
+            <li><a href="">1.第一题第一题第一题第一题第一题第一题第一题第一题第一题第一题第一题第一题第一题第一题第一题第一题第一题第一题第一题</a></li>
+            <li><a href="">2.第一题</a></li>
+            <li><a href="">3.第一题</a></li>
+            <li><a href="">4.第一题</a></li>
+            <li><a href="">第一题</a></li>
+            <li><a href="">第一题</a></li>
+        </ul>
+    </div>
+    <div class="footer">我也是有底线的</div>
+    <script>
+            const t = { Token: localStorage.getItem('token') }
+            if (t.Token) {
+                //判断令牌是否过期，如果过期清楚登录状态，如果没有就跳转
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/open"); // 根据实际的后端路由进行设置
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                            // 请求成功，处理响应
+                            alert("token解析成功")
+                        }
+                        if (xhr.status === 400 || xhr.status === 401) {
+                            // 请求失败，显示错误信息
+                            alert("请重新登录");
+                            self.location = 'index.html'
+                        }
+                    }
+                };
+                xhr.send(JSON.stringify(t))
+
+            }
+        //打开页面获取右上角信息
+        (function () {
+            const id = document.querySelector('.id')
+            id.innerHTML = localStorage.getItem('uid')
+            const data = {
+                username: localStorage.getItem('uid')
+            }
+            console.log(data);
+            const nick = document.querySelector('.nick')
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "/get"); // 根据实际的后端路由进行设置
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(data))
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        // 请求成功，处理响应
+                        response = xhr.responseText;
+                        console.log(response);
+                        nick.innerHTML = response
+                    } else {
+                        // 请求失败，显示错误信息
+                        alert("登录请求失败");
+                    }
+                }
+            };
+            const exit = document.querySelector('.exit')
+            exit.addEventListener('click', e => {
+                e.preventDefault()
+                localStorage.removeItem('uid')
+                localStorage.removeItem('token')
+                self.location = 'index.html'
+            })
+        })()
+
+    </script>
+</body>
+
+</html>
