@@ -32,13 +32,3 @@ type MyClaims struct {
 	UserName string `json:"UserName"`
 	jwt.StandardClaims
 }
-
-type RecvToken struct {
-	Token string `json:"Token"`
-}
-
-/*type MyCustomClaims struct {
-	Username string
-	jwt.RegisteredClaims
-}
-*/

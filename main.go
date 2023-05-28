@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
@@ -28,20 +29,20 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 打印接收到的账号和密码
-	//fmt.Printf("昵称：%s\n", data.Nickname)
-	//fmt.Printf("账号：%s\n", data.Username)
-	//fmt.Printf("密码：%s\n", data.Password)
 	// 将密码进行md5加密之后再存储到数据库中
 	pwd := Security.MD5(data.Password)
-	//fmt.Printf("md5密码：%s\n", pwd)
 
 	// 连接数据库
 	db, err := DataBase.ConnectToDB()
 	if err != nil {
 		return
 	}
-	defer db.Close()
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+
+		}
+	}(db)
 	err = DataBase.CreateTableIfNotExists(db)
 	if err != nil {
 		return
@@ -97,17 +98,20 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("账号：%s\n", data.Username)
-	fmt.Printf("密码：%s\n", data.Password)
 	// 将密码进行md5加密之后再存储到数据库中
 	pwd := Security.MD5(data.Password)
-	fmt.Printf("md5密码：%s\n", pwd)
+
 	// 连接数据库
 	db, err := DataBase.ConnectToDB()
 	if err != nil {
 		return
 	}
-	defer db.Close()
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+
+		}
+	}(db)
 	// 登录
 	if err := DataBase.Login(data.Username, pwd, db); err != 0 {
 		switch err {
@@ -170,7 +174,12 @@ func checkHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	defer db.Close()
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+
+		}
+	}(db)
 	err = DataBase.CreateTableIfNotExists(db)
 	if err != nil {
 		return
