@@ -2,6 +2,7 @@ package StructPackage
 
 import (
 	"github.com/dgrijalva/jwt-go"
+	//"github.com/golang-jwt/jwt/v5"
 	"time"
 )
 
@@ -35,3 +36,9 @@ type MyClaims struct {
 type RecvToken struct {
 	Token string `json:"Token"`
 }
+
+/*type MyCustomClaims struct {
+	Username string
+	jwt.RegisteredClaims
+}
+*/

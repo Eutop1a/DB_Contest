@@ -6,9 +6,11 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"modulename/pkg/DataBase"
+	"modulename/pkg/RpcFunc"
 	"modulename/pkg/Security"
 	"modulename/pkg/StructPackage"
 	"net/http"
+	"net/rpc"
 	"time"
 )
 
@@ -53,7 +55,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	// 创建token
 	// 先设置过期时间
-	expirationTime := time.Now().Add(10 * time.Second)
+	expirationTime := time.Now().Add(10 * time.Hour)
 	token, err := Security.GenerateToken(data.Username, expirationTime)
 	if err != nil {
 		fmt.Println("Generate token error")
@@ -110,28 +112,16 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	if err := DataBase.Login(data.Username, pwd, db); err != 0 {
 		switch err {
 		case 1:
-			response := "该用户名不存在"
-			fmt.Println(response)
-			http.Error(w, "password error", http.StatusNotFound) // 401
-			w.Header().Set("Content-Type", "text/plain")
-			_, Err := w.Write([]byte(response))
-			if Err != nil {
-				fmt.Println("Write Error")
-				return
-			}
+			w.WriteHeader(http.StatusNotFound)
 		case 2:
-			http.Error(w, "password error", http.StatusUnauthorized) // 401
-			response := "密码错误"
-			fmt.Println(response)
-			w.Header().Set("Content-Type", "text/plain")
-			w.Write([]byte(response))
+			w.WriteHeader(http.StatusUnauthorized)
 		}
 		return
 	}
 
 	// 创建token
 	// 过期时间
-	expirationTime := time.Now().Add(10 * time.Second)
+	expirationTime := time.Now().Add(10 * time.Hour)
 	token, err := Security.GenerateToken(data.Username, expirationTime)
 	if err != nil {
 		fmt.Println("Generate token error")
@@ -263,12 +253,27 @@ func checkToken(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// 异步启动
+	// 注册rpc函数
+	rpc.Register(new(RpcFunc.Token))
+
+	// 启动RPC服务器
+	go func() {
+		rpc.HandleHTTP()
+		log.Printf("Serving RPC server on port %d", 8081)
+		if err := http.ListenAndServe(":8081", nil); err != nil {
+			log.Fatal("Error serving RPC server: ", err)
+		}
+	}()
+
+	// 启动HTTP服务器
 	http.HandleFunc("/register", registerHandler)
 	http.HandleFunc("/login", loginHandler)
 	http.HandleFunc("/check", checkHandler)
 	http.HandleFunc("/get", getNickNameHandler)
 	http.HandleFunc("/open", checkToken)
 	http.Handle("/", http.FileServer(http.Dir("static")))
-	log.Println("服务器启动，监听端口 8080...")
+	log.Println("HTTP服务器启动，监听端口 8080...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
+
 }

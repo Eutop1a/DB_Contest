@@ -79,14 +79,12 @@
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     if (xhr.status === 200) {
                         // 请求成功，处理响应
-                        // alert("token解析成功")
+                        alert("token解析成功")
                         self.location = 'question.html'
                     }
                     if (xhr.status === 400 || xhr.status === 401) {
-                        alert("请重新登录");
-                        localStorage.removeItem('uid')
-                        localStorage.removeItem('token')
                         // 请求失败，显示错误信息
+                        alert("请重新登录");
                     }
                 }
             };
@@ -233,7 +231,6 @@
                                         setTimeout(function () { self.location = 'question.html' }, 500)
 
                                     }
-
                                 }
 
                             } else {
