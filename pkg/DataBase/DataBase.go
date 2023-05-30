@@ -113,6 +113,7 @@ func Check(username string, db *sql.DB) error {
 	return nil
 }
 
+// GetNickName 获得昵称
 func GetNickName(Username string) (string, error) {
 	db, err := ConnectToDB()
 	if err != nil {
@@ -134,4 +135,50 @@ func GetNickName(Username string) (string, error) {
 		return "", Err
 	}
 	return NickName, nil
+}
+
+func ChangePassword(Username, oldPassword, newPassword string, db *sql.DB) (int, error) {
+	/*	query0 := `SELECT * FROM users WHERE  userName = ? AND passWord = ?`
+		row0 := db.QueryRow(query, Username, Password)
+		var (
+			id       int
+			NickName string
+			UserName string
+			PassWord string
+		)
+		Err := row0.Scan(&id, &NickName, &UserName, &PassWord)
+		if Err != nil {
+			fmt.Println(Err)
+			return "", Err
+		}
+		// 存在这个用户名 密码是否相同
+		if Password != PassWord {
+			return "Error Pwd", nil
+		}*/
+	query := `UPDATE users SET passWord = ? WHERE userName = ? AND passWord = ?`
+	result, err := db.Exec(query, newPassword, Username, oldPassword)
+	if err != nil {
+		// 发生了一个错误，进行错误处理
+		// 可以根据具体错误类型进行相应的处理逻辑
+		if err == sql.ErrNoRows {
+			// 用户名不存在错误
+			// 执行相应的操作
+			fmt.Println("用户名不存在")
+			return 1, err
+		}
+	} else {
+		// 更新密码成功
+		rowsAffected, _ := result.RowsAffected()
+		if rowsAffected == 0 {
+			// 密码错误
+			fmt.Println("密码错误")
+			return 2, nil
+			// 执行相应的操作
+		} else {
+			// 密码更新成功
+			// 执行相应的操作
+			fmt.Println("密码更新成功")
+		}
+	}
+	return 0, nil
 }

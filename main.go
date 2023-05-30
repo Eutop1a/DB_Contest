@@ -261,6 +261,72 @@ func checkToken(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+// 修改密码
+func changePwd(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	// 解析请求体中的 JSON 数据
+	var data StructPackage.LogMsg
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	// 连接数据库
+	db, err := DataBase.ConnectToDB()
+	if err != nil {
+		return
+	}
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+
+		}
+	}(db)
+	// 将所有的信息传入进行处理
+	newPwd := Security.MD5(data.Password)
+	flag, Err := DataBase.ChangePassword(data.Username, data.Password, newPwd, db)
+	if flag == 1 && Err != nil {
+		// 用户名不存在
+		w.WriteHeader(http.StatusNotFound)
+	}
+	if flag == 2 {
+		// 密码错误
+		w.WriteHeader(http.StatusUnauthorized)
+	}
+	// 更新成功
+	w.WriteHeader(http.StatusOK)
+}
+
+// 忘记密码
+func forgotPwd(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	// 解析请求体中的 JSON 数据
+	var data StructPackage.TokenData
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+}
+
+// 注销
+func unsubscribe(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	// 解析请求体中的 JSON 数据
+	var data StructPackage.TokenData
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+}
+
 func main() {
 	// 异步启动
 	// 注册rpc函数
@@ -281,6 +347,9 @@ func main() {
 	http.HandleFunc("/check", checkHandler)
 	http.HandleFunc("/get", getNickNameHandler)
 	http.HandleFunc("/open", checkToken)
+	http.HandleFunc("/changePwd", changePwd)
+	http.HandleFunc("/forgotPwd", forgotPwd)
+	http.HandleFunc("/unsubscribe", unsubscribe)
 	http.Handle("/", http.FileServer(http.Dir("static")))
 	log.Println("HTTP服务器启动，监听端口 8080...")
 	log.Fatal(http.ListenAndServe(":8080", nil))

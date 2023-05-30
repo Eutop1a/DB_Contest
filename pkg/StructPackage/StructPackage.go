@@ -32,3 +32,9 @@ type MyClaims struct {
 	UserName string `json:"UserName"`
 	jwt.StandardClaims
 }
+
+type ChangePwd struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	NewPwd   string `json:"NewPwd"`
+}
